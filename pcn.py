@@ -65,7 +65,7 @@ class pcn:
 		#print "n data = "
 		#print self.nData
 		# Add the inputs that match the bias node
-		inputs = np.concatenate((inputs,-np.ones((self.nData,1))),axis=1)
+		inputs = np.concatenate((inputs,-np.ones((len(inputs),1))),axis=1)
 		
 		outputs = np.dot(inputs,self.weights)
 	
