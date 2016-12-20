@@ -2,11 +2,13 @@
 import csv
 import random
 import math
+import numpy as np
  
 def loadCsv(filename):
 	lines = csv.reader(open(filename, "rb"))
 	dataset = list(lines)
 	dataset.pop(0)
+	np.random.shuffle(dataset)
 	for i in range(len(dataset)):
 		dataset[i] = [float(x) for x in dataset[i]]
 	return dataset
@@ -50,8 +52,8 @@ def summarizeByClass(dataset):
 	return summaries
  
 def calculateProbability(x, mean, stdev):
-	exponent = math.exp(-(math.pow(x-mean,2)/(2*math.pow(stdev,2))))
-	return (1 / (math.sqrt(2*math.pi) * stdev)) * exponent
+	exponent = math.exp(-(math.pow(x-mean,2)/max((2*math.pow(stdev,2)), .0000001)))
+	return (1 / max((math.sqrt(2*math.pi) * stdev), .000000001)) * exponent
  
 def calculateClassProbabilities(summaries, inputVector):
 	probabilities = {}
@@ -80,32 +82,48 @@ def getPredictions(summaries, testSet):
 	return predictions
  
 def getAccuracy(testSet, predictions):
-	correct = 0
+	trueNegative = 0
+	truePositive = 0
 	falseNegative = 0
 	falsePositive = 0
 	for i in range(len(testSet)):
-		if testSet[i][-1] == predictions[i]:
-			correct += 1
+		if testSet[i][-1] == 0 and predictions[i] == 0:
+			trueNegative += 1
+		elif testSet[i][-1] == 1 and predictions[i] == 1:
+			truePositive +=1
 		elif testSet[i][-1] == 0 and predictions[i] == 1:
 			falsePositive += 1
 		elif testSet[i][-1] == 1 and predictions[i] == 0:
 			falseNegative += 1
-	print "The Number Correct was %f " % correct
-	print "The Number of false negatives was %f " % falseNegative
-	print "The Number of false positives was %f " % falsePositive
+	#print "The Number of true negatives was %f " % trueNegative
+	#print "The Number of true positives was %f " % truePositive
+	#print "The Number of false negatives was %f " % falseNegative
+	#print "The Number of false positives was %f " % falsePositive
+	correct = truePositive + trueNegative
 	return (correct/float(len(testSet))) * 100.0
  
-def main():
+def main(splitRatio):
 	filename = 'MAR_Data.csv'
-	splitRatio = 0.67
+	#splitRatio = 0.67
 	dataset = loadCsv(filename)
 	trainingSet, testSet = splitDataset(dataset, splitRatio)
-	print('Split {0} rows into train={1} and test={2} rows').format(len(dataset), len(trainingSet), len(testSet))
+	#print('Split {0} rows into train={1} and test={2} rows').format(len(dataset), len(trainingSet), len(testSet))
 	# prepare model
 	summaries = summarizeByClass(trainingSet)
 	# test model
 	predictions = getPredictions(summaries, testSet)
 	accuracy = getAccuracy(testSet, predictions)
-	print('Accuracy: {0}%').format(accuracy)
- 
-main()
+	return accuracy
+	#print('Accuracy: {0}%').format(accuracy)
+
+def rangefinder():
+	splitRatios = [0.5, 0.67, 0.75, 0.8]
+	for ratio in splitRatios:
+		avgSum = 0.0
+		for oops in range(0, 100):
+			avgSum  = main(ratio)
+
+		print ('Accuracy: {0}%').format(avgSum/100.0)
+
+#print main(0.67)
+rangefinder()

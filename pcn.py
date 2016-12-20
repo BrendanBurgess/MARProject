@@ -44,9 +44,9 @@ class pcn:
 			self.weights -= eta*np.dot(np.transpose(inputs),self.activations-targets)
 		
 			# Randomise order of inputs
-			np.random.shuffle(change)
-			inputs = inputs[change,:]
-			targets = targets[change,:]
+			#np.random.shuffle(change)
+			#inputs = inputs[change,:]
+			#targets = targets[change,:]
 			
 		#return self.weights
 
