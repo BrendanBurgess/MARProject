@@ -88,8 +88,34 @@ class pcn:
 		#print np.trace(cm)/np.sum(cm)
 		return np.trace(cm)/np.sum(cm)
 
-	
 
+	def confmatPrint(self,inputs,targets):
+		"""Confusion matrix"""
+
+		#print "n data = "
+		#print self.nData
+		# Add the inputs that match the bias node
+		inputs = np.concatenate((inputs,-np.ones((len(inputs),1))),axis=1)
+		
+		outputs = np.dot(inputs,self.weights)
+	
+		nClasses = np.shape(targets)[1]
+
+		if nClasses==1:
+			nClasses = 2
+			outputs = np.where(outputs>0,1,0)
+		else:
+			# 1-of-N encoding
+			outputs = np.argmax(outputs,1)
+			targets = np.argmax(targets,1)
+
+		cm = np.zeros((nClasses,nClasses))
+		for i in range(nClasses):
+			for j in range(nClasses):
+				cm[i,j] = np.sum(np.where(outputs==i,1,0)*np.where(targets==j,1,0))
+
+		print cm
+		print np.trace(cm)/np.sum(cm)
 
 		
 def logic():

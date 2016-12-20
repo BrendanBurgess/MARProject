@@ -17,10 +17,10 @@ def inputs():
 
 	#print "total"
 	varLength = len(mar[0])
-	trainin = mar[::3,:varLength -2]
-	trainin2 = mar[1::3,:varLength -2]
-	traintgt = mar[::3,varLength -2:varLength -1]
-	traintgt2 = mar[1::3,varLength -2:varLength -1]
+	trainin = mar[::3,:varLength -1]
+	trainin2 = mar[1::3,:varLength -1]
+	traintgt = mar[::3,varLength -1:varLength]
+	traintgt2 = mar[1::3,varLength -1:varLength]
 
 	#print "individuals"
 	#print len(trainin)
@@ -31,8 +31,8 @@ def inputs():
 	traintgt = np.concatenate((traintgt, traintgt2), axis =0)
 	#print len(trainin)
 
-	testin = mar[2::3,:varLength -2]
-	testtgt = mar[2::3,varLength -2:varLength -1]
+	testin = mar[2::3,:varLength -1]
+	testtgt = mar[2::3,varLength -1:varLength]
 	return (trainin, traintgt, testin, testtgt)
 
 def paramsFinderFull():
@@ -66,7 +66,7 @@ def runnerFull (learningRate, NIterations):
 	print "testin"
 	print len(testin)
 	print len(testtgt)
-	
+	trainin, traintgt, testin, testtgt = inputs()
 	a = []
 	for x in range(0, 1000):
 		p1 = pcn.pcn(trainin,traintgt)
@@ -78,7 +78,14 @@ def runnerFull (learningRate, NIterations):
 	avg = ((np.sum(a))/1000)*100
 	print avg
 
+def checkConfusion():
+	trainin, traintgt, testin, testtgt = inputs()
+	p1 = pcn.pcn(trainin,traintgt)
+	p1.pcntrain(trainin,traintgt, 0.15, 250)
+	p1.confmatPrint(testin,testtgt)
+
 # Perceptron training on the preprocessed dataset
 print "raw data output"
+checkConfusion()
 paramsFinderFull()
 #runnerFull(0.15, 250)
